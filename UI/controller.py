@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import flet as ft
 
 from UI.view import View
@@ -61,6 +63,7 @@ class Controller:
             self.aer_arr = e.control.data
 
     def handle_aer_connessi(self, e):
+
         self._view.txt_result.controls.clear()
 
         a0 = self.aer_part
@@ -78,7 +81,48 @@ class Controller:
 
 
     def handle_connessione(self, e):
-        pass
+        self._view.txt_result.controls.clear()
+        a1 = self.aer_part
+        a2 = self.aer_arr
+
+        # verificare che ci sia un percorso
+        if (not self._model.esiste_percorso(a1, a2)):
+            self._view.txt_result.controls.append(ft.Text(f"Non esiste un percorso tra {a1} e {a2}."))
+            return
+        else:
+            self._view.txt_result.controls.append(ft.Text(f"Esiste un percorso tra {a1} e {a2}"))
+
+        # trovare un possibile percorso
+        path = self._model.trova_cammino_BFS(a1, a2)
+        self._view.txt_result.controls.append(ft.Text(f"Il cammino (con minor numero di archi) tra {a1} e {a2} è:"))
+        for p in path:
+            self._view.txt_result.controls.append(ft.Text(f"{p}"))
+
+        self._view.txt_num_tratte_max.disabled = False
+        self._view.btn_cerca_itinerario.disabled = False
+        self._view.update_page()
 
     def handle_itinerario(self, e):
-        pass
+        a1 = self.aer_part
+        a2 = self.aer_arr
+        t = self._view.txt_num_tratte_max.value
+
+        try:
+            t_int = int(t)
+        except ValueError:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text("Per favore inserire un valore intero."))
+
+        tic = datetime.now()
+        path, score = self._model.get_cammino_ottimo(a1, a2, t_int)
+
+        self._view.txt_result.controls.clear()
+
+        self._view.txt_result.controls.append(ft.Text(f"Il percorso ottimo tra {a1} e {a2} è:"))
+        for p in path:
+            self._view.txt_result.controls.append(ft.Text(f"{p}"))
+
+        self._view.txt_result.controls.append(ft.Text(f"Numero totale di voli: {score}"))
+        self._view.txt_result.controls.append(ft.Text(f"La ricerca ha impegato un tempo pari a {datetime.now()-tic}"))
+
+        self._view.update_page()
