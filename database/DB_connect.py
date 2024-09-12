@@ -23,6 +23,8 @@ class DBConnect:
                 cls._cnxpool = mysql.connector.pooling.MySQLConnectionPool(
                     pool_name=pool_name,
                     pool_size=pool_size,
+                    charset="utf8mb3",
+                    collation="utf8mb3_unicode_ci",
                     option_files=f"{pathlib.Path(__file__).resolve().parent}/connector.cnf"
                 )
                 return cls._cnxpool.get_connection()
