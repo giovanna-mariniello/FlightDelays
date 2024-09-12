@@ -116,13 +116,12 @@ class Model:
             # verificare che parziale è meglio di best
             # esco
 
+        if len(parziale) == t+1:   # perché parziale appende i nodi (t archi -> t+1 nodi)
+            return
+
         if self.getObjFun(parziale) > self._bestObjFun and parziale[-1] == target:  # controllo anche che l'ultimo nodo di parziale sia effettivamente il mio nodo target
             self._bestObjFun = self.getObjFun(parziale)
             self._bestPath = copy.deepcopy(parziale)
-            return
-
-        if len(parziale) == t+1:   # perché parziale appende i nodi (t archi -> t+1 nodi)
-            return
 
 
         for n in self._grafo.neighbors(parziale[-1]):  # ciclo tra i vicini dell'ultimo nodo che ho aggiunto in parziale
